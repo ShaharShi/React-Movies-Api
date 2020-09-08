@@ -22,7 +22,6 @@ function MoviesPageInternal() {
     const [deletedMovies, setDeletedMovies] = useState(initialDeletedMovies)
     const [starsColor, setStarsColor] = useState(StarColors.secondary);
     const [alertConfig, setAlertConfig] = useState({ show: false, message: "" })
-    // const [getter, setter] = useState(Initial State)
     const [isLoading, setLoader] = useState(true)
 
 
