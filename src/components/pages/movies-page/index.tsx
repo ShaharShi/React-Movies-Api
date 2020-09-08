@@ -13,6 +13,7 @@ import { getAllByTestId } from '@testing-library/react';
 import Filter from '../../filter';
 import { StarColors } from "../../rank"
 import Configuration from '../../configuration';
+import { ArrowRight, ArrowLeft } from 'react-bootstrap-icons';
 
 
 function MoviesPageInternal() {
@@ -23,12 +24,13 @@ function MoviesPageInternal() {
     const [starsColor, setStarsColor] = useState(StarColors.secondary);
     const [alertConfig, setAlertConfig] = useState({ show: false, message: "" })
     const [isLoading, setLoader] = useState(true)
+    const [pageCount, setPageCount] = useState(1)
+    const [apiFilterValue, setApiFilterValue] = useState("scream")
 
-
-    async function getMoviesApi(searchValue: string = "") {
+    async function getMoviesApi() {
         setLoader(true)
         try {
-            const moviesUrl = `http://www.omdbapi.com/?s=${searchValue}&apikey=4f7462e2&page=10`
+            const moviesUrl = `http://www.omdbapi.com/?s=${apiFilterValue}&apikey=4f7462e2&page=${pageCount.toString()}`
             const { data } = await axios.get(moviesUrl);
             if (data.Response === "False") throw Error("No Data From Api")
             setMovies(data.Search)
@@ -36,7 +38,6 @@ function MoviesPageInternal() {
 
         } catch ({ message }) {
             setAlertConfig({ show: true, message })
-            //@ts-ignore
             setMovies([])
             clearErrorMessage()
         } finally {
@@ -44,19 +45,15 @@ function MoviesPageInternal() {
         }
     }
 
+    useEffect(() => {
+        getMoviesApi()
+    }, [pageCount, apiFilterValue])
 
     function clearErrorMessage() {
         setTimeout(() => {
             setAlertConfig({ show: false, message: "" })
         }, 2000);
     }
-    useEffect(() => {
-        //this code will run: cases:
-        // on initial render
-        // on any chnage in the array params
-        getMoviesApi("scream")
-    }, [starsColor])
-
     function clearMovies() {
         setMovies([])
     }
@@ -89,7 +86,7 @@ function MoviesPageInternal() {
         }
     }
     function filterOperationApi(value: string) {
-        getMoviesApi(value)
+        setApiFilterValue(value)
     }
     function filterOperation(value: string) {
         if (!value) return setMovies(movies);
@@ -110,6 +107,10 @@ function MoviesPageInternal() {
         <div className="row">
             <Filter filterOperation={filterOperation} />
             <Button onClick={() => setMovies([])} > clear filter</Button>
+            <div className={"ml-auto"}>
+                <Button className={'mr-3'} variant={'danger'} onClick={() => setPageCount(pageCount - 1) }>Prev <ArrowLeft/></Button>
+                <Button variant={'success'} onClick={() => setPageCount(pageCount + 1) }>Next <ArrowRight/></Button>
+            </div>
         </div>
         <div className="row">
             <Button onClick={clearMovies} > clear Movies</Button>
