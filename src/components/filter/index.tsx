@@ -9,7 +9,6 @@ interface IProps {
 export default function Filter(props: IProps) {
     const [filterValue, setFilterValue] = useState("")
     const { filterOperation } = props;
-    console.log("filter render")
     return <div>
         <InputGroup className="mb-3">
             <FormControl
